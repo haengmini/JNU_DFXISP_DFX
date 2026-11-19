@@ -212,13 +212,13 @@ b ≤ 3.97을 얻었다. 두 센서의 a가 **66배**(0.9 vs 60.6, 14-bit) 차�
 
 `reports/csynth/rm_lowlight_isp_top_csynth.rpt`
 
-| top | BRAM_18K | DSP | FF | LUT | Est. period |
+| 최상위 | BRAM_18K | DSP | FF | LUT | 추정 주기 |
 |---|---:|---:|---:|---:|---:|
 | **`rm_lowlight_isp_top`** (배포, **denoise OFF**) | 11 | 20 | **5,483** | **8,115** | 3.650 ns |
 | (참고) 같은 arm, denoise ON | 11 | 20 | 7,555 | 12,826 | 3.650 ns |
-| `rm_default_isp_top` (v2 normal) | 4 | 28 | 8,794 | 12,659 | 3.650 ns |
+| `rm_default_isp_top` (v2 일반) | 4 | 28 | 8,794 | 12,659 | 3.650 ns |
 | `rm_low_light_tone_top` (v1 저조도) | 8 | 9 | 3,243 | 4,204 | 3.650 ns |
-| `rm_normal_tone_top` (v1 normal) | 4 | 12 | 3,797 | 5,202 | 3.650 ns |
+| `rm_normal_tone_top` (v1 일반) | 4 | 12 | 3,797 | 5,202 | 3.650 ns |
 
 **denoise 제거의 효과**(2026-08-06 ablation 결과 반영) — RM top이
 `DENOISE_OFF` 상수를 넘기므로 HLS 상수 전파가 합성 시점에 해당 경로를
