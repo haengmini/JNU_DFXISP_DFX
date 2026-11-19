@@ -13,6 +13,8 @@ Origin : https://github.com/haengmini/dfxisp (2026-08-06 추출, 커밋
 -->
 # JNU DFXISP — FPGA 실험 저장소
 
+> **안내:** 이 저장소는 2026-08-06 스냅샷입니다. 추출 원본인 연구 저장소는 비공개로 전환했습니다(아래 문서의 `haengmini/dfxisp` 링크는 현재 연구 안내 저장소를 가리킵니다). 처음부터 끝까지 따라 하려면 [DFXISP-Tutorials](https://github.com/haengmini/DFXISP-Tutorials)를 보세요.
+
 연구용 저장소
 [haengmini/dfxisp](https://github.com/haengmini/dfxisp)에서 추출하되
 **FPGA 실험에 필요한 것만** 남겼다: HLS 소스, Vivado DFX 플로우, 실제 RAW
