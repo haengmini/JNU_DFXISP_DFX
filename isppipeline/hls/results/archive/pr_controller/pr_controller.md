@@ -1,53 +1,47 @@
-# pr_controller.v — design background notes
+# pr_controller.v — 설계 배경 노트
 
-> **Role change (2026-08-06):** the AMD DFX Controller IP (PG374) was
-> adopted as the production reconfiguration path (`dfxc_adapter.md`). This
-> module is retained **for latency characterization only** — its
-> self-owned word-count completion is what makes stage-by-stage
-> trigger→done measurement possible.
+> **역할 변경 (2026-08-06):** AMD DFX Controller IP(PG374)가 운영용 재구성 경로로
+> 채택되었다(`dfxc_adapter.md`). 이 모듈은 **지연 특성 분석 용도로만** 유지한다 —
+> 자체 워드 카운트 기반 완료 판정 덕분에 단계별 trigger→done 측정이 가능하기 때문이다.
 
-Documentation split out of the source comments of `pr_controller.v`.
-(Origin: haengmini/dfxisp commit `ea6c2de`.)
+`pr_controller.v` 소스 주석에서 분리한 문서이다.
+(출처: haengmini/dfxisp 커밋 `ea6c2de`.)
 
-## What it is
+## 무엇인가
 
-First-pass DFX partial-reconfiguration controller FSM (Phase 2.1).
+1차 DFX 부분 재구성(partial reconfiguration) 컨트롤러 FSM (Phase 2.1).
 
 ```
 FSM: IDLE -> DRAIN_WAIT -> ICAP_ARM -> ICAP_STREAM -> DONE -> IDLE
 ```
 
-## Why completion comes from its own word counter
+## 완료 신호를 자체 워드 카운터에서 얻는 이유
 
-The config1/config2 utilization reports (2026-07-03) show **zero**
-ICAPE3/STARTUPE3 instances — there was no PR controller yet, which is also
-why the earlier isolated ICAPE3-only simulation could never produce a
-trustworthy completion signal: ICAPE3's PRDONE depends on eos_startup, which
-requires a real STARTUPE3 / device-level configuration context this design
-does not have.
+config1/config2 사용률 리포트(2026-07-03)에는 ICAPE3/STARTUPE3 인스턴스가 **하나도**
+없다. 즉 당시에는 PR 컨트롤러가 아직 없었고, 이것이 앞서 ICAPE3 단독으로 돌린
+시뮬레이션이 신뢰할 만한 완료 신호를 끝내 만들어내지 못한 이유이기도 하다. ICAPE3의
+PRDONE은 eos_startup에 의존하는데, 이는 이 설계에는 없는 실제 STARTUPE3 / 디바이스
+수준 컨피규레이션 컨텍스트를 필요로 한다.
 
-This module sidesteps that entirely — instead of trusting ICAPE3's PRDONE,
-it **completes when its own word counter reaches the known partial-bitstream
-word count** (171,633 words, verified 2026-07-02 by parsing the real
-`rm_lowlight_partial.bit`). That signal is fully owned by this design and
-can be validated in simulation without STARTUPE3.
+이 모듈은 그 문제를 아예 우회한다. ICAPE3의 PRDONE을 믿는 대신, **자체 워드
+카운터가 이미 알려진 부분 비트스트림 워드 수(171,633 워드, 2026-07-02에 실제
+`rm_lowlight_partial.bit`를 파싱해 검증)에 도달하면 완료**로 판정한다. 이 신호는
+전적으로 이 설계가 소유하며 STARTUPE3 없이도 시뮬레이션에서 검증할 수 있다.
 
-## Limits of the fabric-only version (= the Stage 6 prerequisites)
+## 패브릭 전용 버전의 한계 (= Stage 6 선행 조건)
 
-- The partial-bitstream source is a **BRAM** (`$readmemh` in simulation,
-  BRAM init assumed for real use) — not PS/DDR yet. The PS/DDR upgrade comes
-  after PS/DDR integration.
-- `drain_ready` is not yet tied to the real RM `ap_idle`.
-- ICAPE3/STARTUPE3 are not instantiated.
+- 부분 비트스트림 소스가 **BRAM**이다(시뮬레이션에서는 `$readmemh`, 실사용은 BRAM
+  초기화 가정). 아직 PS/DDR이 아니다. PS/DDR로의 업그레이드는 PS/DDR 통합 이후에 한다.
+- `drain_ready`가 아직 실제 RM의 `ap_idle`에 연결되지 않았다.
+- ICAPE3/STARTUPE3가 인스턴스화되어 있지 않다.
 
-All three are the "Stage 6 prerequisites" items in this repo's README.
+세 가지 모두 이 저장소 README의 "Stage 6 선행 조건" 항목이다.
 
-## Trigger source (added 2026-08-06)
+## 트리거 소스 (2026-08-06 추가)
 
-`trigger` is no longer an unconnected input: `checker_hysteresis.v` (same
-directory) generates it from the HLS checker's per-frame Schmitt-band flags
-and holds it until `busy` acks — see `checker_hysteresis.md` and the
-end-to-end simulation `checker_to_pr_tb.v` (xsim PASS). The same doc lists
-the remaining integration considerations found by source inspection
-(stale `NWORDS` default vs the new-pblock bitstream, 2-cycles-per-word
-streaming, 200 MHz TB clock vs ICAPE3's rated 100 MHz).
+`trigger`는 더 이상 연결되지 않은 입력이 아니다. `checker_hysteresis.v`(같은
+디렉터리)가 HLS 체커의 프레임별 슈미트 밴드 플래그로부터 이를 생성하고 `busy`가
+ack할 때까지 유지한다 — `checker_hysteresis.md`와 종단 간 시뮬레이션
+`checker_to_pr_tb.v`(xsim PASS)를 참고. 같은 문서에 소스 검토로 확인한 남은 통합
+고려사항(새 pblock 비트스트림 대비 낡은 `NWORDS` 기본값, 워드당 2사이클 스트리밍,
+ICAPE3 정격 100 MHz 대비 200 MHz TB 클럭)이 정리되어 있다.

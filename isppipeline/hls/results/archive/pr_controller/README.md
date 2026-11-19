@@ -1,11 +1,10 @@
-# Archived: custom pr_controller (2026-08-06)
+# 보관됨: 커스텀 pr_controller (2026-08-06)
 
-Moved here unmodified after the AMD DFX Controller IP (PG374) was adopted as
-the production reconfiguration path. Its measurement role is taken over by
-`../../pr_controller/pr_latency_probe.v`, which counts the IP's own
-handshake boundaries (the IP has no built-in latency counter) — so this FSM
-is no longer needed as an instrument either. Kept for history: its
-simulations produced the 2026-07-03 trigger→done measurement (1.716 ms at
-200 MHz, 171,633-word payload) cross-validating the spec-derived estimate.
-Known caveats at retirement: stale NWORDS vs the new-pblock bitstream,
-2-cycles-per-word streaming, TB clocked above ICAPE3's rated 100 MHz.
+AMD DFX Controller IP(PG374)가 운영용 재구성 경로로 채택된 뒤 수정 없이 이곳으로
+옮겼다. 측정 역할은 `../../pr_controller/pr_latency_probe.v`가 이어받는데, 이 모듈은
+IP 자체의 핸드셰이크 경계를 카운트한다(IP에는 내장 지연 카운터가 없다). 따라서 이 FSM은
+계측 장치로도 더 이상 필요하지 않다. 이력 보존용으로 남긴다. 이 FSM의 시뮬레이션이
+2026-07-03의 trigger→done 측정값(200 MHz에서 1.716 ms, 페이로드 171,633 워드)을
+만들어 스펙 기반 추정치를 교차 검증했다.
+폐기 시점의 알려진 주의점: 새 pblock 비트스트림 대비 낡은 NWORDS, 워드당 2사이클
+스트리밍, ICAPE3 정격 100 MHz보다 높은 클럭으로 구동된 TB.
