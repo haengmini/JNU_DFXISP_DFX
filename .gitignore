@@ -1,7 +1,5 @@
-build/
+hls_workspace/
+vivado_workspace/
+*.docx
 __pycache__/
-*.log
-*.jou
-*.str
-*.bit
-*.dcp
+*.pyc
