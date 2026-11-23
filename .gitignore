@@ -3,3 +3,6 @@ vivado_workspace/
 *.docx
 __pycache__/
 *.pyc
+
+# RM 래퍼 시뮬레이션 기본 출력
+rm_wrapper/sim_results/
